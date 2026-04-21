@@ -24,17 +24,17 @@ const STAGE_HEIGHT = 50;
 
 // Marth stats
 let marthStats = {
-  runSpeed: 1.964,
-  initialDash: 2.255,
-  airAcceleration: 0.08,
-  airSpeed: 1.071,
+  runSpeed: 3,
+  initialDash: 3.4,
+  airAcceleration: 1,
+  airSpeed: 2.5,
   friction: 0.886,
-  gravity: 0.075,
+  gravity: 0.75,
   fallSpeed: 1.58,
   fastFallSpeed: 2.528,
-  shortHopPower: -2.5,
-  fullHopPower: -5,
-  doubleJumpPower: -5,
+  shortHopPower: -12,
+  fullHopPower: -15,
+  doubleJumpPower: -17,
   weight: 90,
   color: "blue",
   dimension: 40,
@@ -165,6 +165,7 @@ class Player {
         // Reset jumpsquat timer and jumps
         this.jumpAvailable = true;
         this.doubleJumpAvailable = false;
+        this.jumpSquatting = false;
         this.jumpSquatTimer = 3;
       }
       break;
@@ -214,10 +215,10 @@ class Player {
   prepareGroundJump() {
     this.velocity.x = 0;
     this.jumpSquatTimer--;
-    this.color = "red";
+    this.stats.color = "red";
     if (this.jumpSquatTimer <= 0) {
       this.jumpSquatting = false;
-      this.color = "blue";
+      this.stats.color = "blue";
       this.groundJump();
     }
   }
@@ -260,10 +261,10 @@ class Player {
     this.acceleration.mult(0);
 
     // Cap speeds corresponding to state
-    if (this.position.y - this.stats.dimension / 2 >= STAGE_Y && this.velocity.x > this.stats.runSpeed) {
+    if (this.state === "running" || this.state === "idle") {
       this.velocity.x = constrain(this.velocity.x, -this.stats.runSpeed, this.stats.runSpeed);
     }
-    if (this.position.y + this.stats.dimension / 2 < STAGE_Y && this.velocity.x > this.stats.airSpeed) {
+    if (this.state === "airborne") {
       this.velocity.x = constrain(this.velocity.x, -this.stats.airSpeed, this.stats.airSpeed);
     }
   }
