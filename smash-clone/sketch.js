@@ -1,10 +1,7 @@
-// Project Title
-// Your Name
-// Date
-//
-// Extra for Experts:
-// - describe what you did to take this project "above and beyond"
-
+// Smash Clone
+// Mitt Pham
+// April 16
+// 
 // References and resources:
 // https://p5js.org/reference/p5/p5.Vector/ - vector class
 // https://editor.p5js.org/jeffThompson/sketches/rrssQYach - frame count
@@ -13,15 +10,6 @@
 // https://ultimateframedata.com/stats - character statistics
 // https://www.jeffreythompson.org/collision-detection/rect-rect.php - rect/rect collision detection
 
-
-function setup() {
-  createCanvas(windowWidth, windowHeight);
-}
-
-function draw() {
-  background(220);
-}
-
 // Player constants and variables
 const SPAWN_X = 300;
 const SPAWN_Y = 150;
@@ -29,7 +17,7 @@ const SPAWN_Y = 150;
 let player;
 
 // Stage constants and variables
-const STAGE_X = 400;
+const STAGE_X = 200;
 const STAGE_Y = 400;
 const STAGE_WIDTH = 800;
 const STAGE_HEIGHT = 50;
@@ -48,9 +36,9 @@ let marthStats = {
   fullHopPower: -10,
   doubleJumpPower: -12,
   weight: 50,
-  color: “blue”,
+  color: "blue",
   dimension: 40,
-}
+};
 
 // Create the base player
 class Player {
@@ -63,7 +51,7 @@ class Player {
     this.stats = stats;
 
     // States
-    this.state = “airborne”; // idle, running, airborne, jumpsquat, hitsun, starting, active, ending
+    this.state = "airborne"; // idle, running, airborne, jumpsquat, hitsun, starting, active, ending
 
     // Booleans/Conditions
     this.direction = true;
@@ -115,79 +103,78 @@ class Player {
 
   // Control the player’s states, conditions, and behavior
   manageState() {
-    switch(this.state) {
+    switch (this.state) {
 
-      // idle state behaviors and triggers
-      case “idle”:
+    // idle state behaviors and triggers
+    case "idle":
 
-        // State behavior
-        this.velocity.x = 0;
-        this.addFriction();
+      // State behavior
+      this.velocity.x = 0;
+      this.addFriction();
 
-        // State triggers
-        if (this.jumpSquatting) {
-          this.state = “jumpSquat”;
-        }
-
-        if (keyIsDown(65) || keyIsDown(68)) {
-          this.state = “running”;
-        }
-
-        if (this.position.y < STAGE_Y) {
-          this.state = “airborne”;
-        }
-        break;
-
-      // running state behaviors and triggers
-      case “running”:
-
-        // State Behavior
-        this.groundMovement();
-        this.addFriction();
-
-        // State triggers
-        if (!keyIsDown(65) || !keyIsDown(68)) {
-          this.state = “idle”;
-        }
-
-        if (this.jumpSquatting) {
-          this.state = “jumpSquat”;
-        }
-
-        if (this.position.y < STAGE_Y) {
-          this.state = “airborne”;
-        }
-        break;
-
-      // airborne state behaviors and triggers
-      case “airborne”:
-
-        // State behavior
-        this.airMovement();
-
-        // State trigger
-        if (this.position.y >= STAGE_Y) {
-          this.state = “idle”;
-
-          // Reset jumpsquat timer and jumps
-          this.jumpAvailable = true;
-          this.doubleJumpAvailable = false;
-          this.jumpSquatTimer = 3;
-        }
-        break;
-
-      // jumpSquat state behaviours and trigger
-      case “jumpSquat”:
-
-        // State behavior
-        this.prepareGroundJump();
-
-        // State trigger
-        if (this.position.y < STAGE_Y) {
-          this.state = “airborne”;
-        }
-        break;
+      // State triggers
+      if (this.jumpSquatting) {
+        this.state = "jumpSquat";
       }
+
+      if (keyIsDown(65) || keyIsDown(68)) {
+        this.state = "running";
+      }
+
+      if (this.position.y < STAGE_Y) {
+        this.state = "airborne";
+      }
+      break;
+
+    // running state behaviors and triggers
+    case "running":
+
+      // State Behavior
+      this.groundMovement();
+      this.addFriction();
+
+      // State triggers
+      if (!keyIsDown(65) || !keyIsDown(68)) {
+        this.state = "idle";
+      }
+
+      if (this.jumpSquatting) {
+        this.state = "jumpSquat";
+      }
+
+      if (this.position.y < STAGE_Y) {
+        this.state = "airborne";
+      }
+      break;
+
+    // airborne state behaviors and triggers
+    case "airborne":
+
+      // State behavior
+      this.airMovement();
+
+      // State trigger
+      if (this.position.y >= STAGE_Y) {
+        this.state = "idle";
+
+        // Reset jumpsquat timer and jumps
+        this.jumpAvailable = true;
+        this.doubleJumpAvailable = false;
+        this.jumpSquatTimer = 3;
+      }
+      break;
+
+    // jumpSquat state behaviours and trigger
+    case "jumpSquat":
+
+      // State behavior
+      this.prepareGroundJump();
+
+      // State trigger
+      if (this.position.y < STAGE_Y) {
+        this.state = "airborne";
+      }
+      break;
     }
   }
 
@@ -218,11 +205,10 @@ class Player {
       this.acceleration.add(-this.stats.airAcceleration, 0);
     }
   }
-
   // Pause before the player jumps
   prepareGroundJump() {
     this.velocity.x = 0;
-    this.jumpSquatTimer–;
+    this.jumpSquatTimer--;
     if (this.jumpSquatTimer <= 0) {
       this.jumpSquatting = false;
       this.groundJump();
@@ -230,7 +216,7 @@ class Player {
   }
 
   // Make player jump from the ground
-  groundJump() {    
+  groundJump() {
     if (this.jumpAvailable) {
 
       // Determine jump height
@@ -279,7 +265,7 @@ class Player {
 // Setup player
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  
+
   // Create player
   player = new Player(SPAWN_X, SPAWN_Y, marthStats);
 }
@@ -290,6 +276,7 @@ function draw() {
 
   // Draw stage
   rectMode(CORNER);
+  fill("white");
   rect(STAGE_X, STAGE_Y, STAGE_WIDTH, STAGE_HEIGHT);
 
   // Update player states and movement
