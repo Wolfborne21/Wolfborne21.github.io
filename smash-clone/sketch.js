@@ -24,18 +24,18 @@ const STAGE_HEIGHT = 50;
 
 // Marth stats
 let marthStats = {
-  runSpeed: 10,
-  initialDash: 10,
-  airAcceleration: 10,
-  airSpeed: 10,
-  friction: 0.8,
-  gravity: 5,
-  fallSpeed: 2,
-  fastFallSpeed: 10,
-  shortHopPower: -5,
-  fullHopPower: -10,
-  doubleJumpPower: -12,
-  weight: 50,
+  runSpeed: 1.964,
+  initialDash: 2.255,
+  airAcceleration: 0.08,
+  airSpeed: 1.071,
+  friction: 0.886,
+  gravity: 0.075,
+  fallSpeed: 1.58,
+  fastFallSpeed: 2.528,
+  shortHopPower: -2.5,
+  fullHopPower: -5,
+  doubleJumpPower: -5,
+  weight: 90,
   color: "blue",
   dimension: 40,
 };
@@ -72,6 +72,7 @@ class Player {
     rectMode(CENTER);
 
     // Square to represent the player
+    noStroke();
     fill(this.stats.color);
     square(this.position.x, this.position.y, this.stats.dimension);
   }
@@ -91,7 +92,7 @@ class Player {
 
   // Add gravity to player
   addGravity() {
-    if (this.position.y < STAGE_Y) {
+    if (this.position.y + this.stats.dimension / 2 < STAGE_Y) {
       this.velocity.y += this.stats.gravity;
     }
   }
@@ -121,7 +122,7 @@ class Player {
         this.state = "running";
       }
 
-      if (this.position.y < STAGE_Y) {
+      if (this.position.y + this.stats.dimension / 2 < STAGE_Y) {
         this.state = "airborne";
       }
       break;
@@ -134,7 +135,7 @@ class Player {
       this.addFriction();
 
       // State triggers
-      if (!keyIsDown(65) || !keyIsDown(68)) {
+      if (!keyIsDown(65) && !keyIsDown(68)) {
         this.state = "idle";
       }
 
@@ -142,7 +143,7 @@ class Player {
         this.state = "jumpSquat";
       }
 
-      if (this.position.y < STAGE_Y) {
+      if (this.position.y + this.stats.dimension / 2 < STAGE_Y) {
         this.state = "airborne";
       }
       break;
@@ -154,8 +155,12 @@ class Player {
       this.airMovement();
 
       // State trigger
-      if (this.position.y >= STAGE_Y) {
+      if (this.position.y + this.stats.dimension / 2 >= STAGE_Y) {
         this.state = "idle";
+
+        // Reset velocity and snap to stage
+        this.velocity.y = 0;
+        this.position.y = STAGE_Y - this.stats.dimension / 2;
 
         // Reset jumpsquat timer and jumps
         this.jumpAvailable = true;
@@ -171,7 +176,7 @@ class Player {
       this.prepareGroundJump();
 
       // State trigger
-      if (this.position.y < STAGE_Y) {
+      if (this.position.y + this.stats.dimension / 2 < STAGE_Y) {
         this.state = "airborne";
       }
       break;
@@ -209,8 +214,10 @@ class Player {
   prepareGroundJump() {
     this.velocity.x = 0;
     this.jumpSquatTimer--;
+    this.color = "red";
     if (this.jumpSquatTimer <= 0) {
       this.jumpSquatting = false;
+      this.color = "blue";
       this.groundJump();
     }
   }
@@ -253,11 +260,11 @@ class Player {
     this.acceleration.mult(0);
 
     // Cap speeds corresponding to state
-    if (this.position.y >= STAGE_Y && this.velocity.x > this.stats.runSpeed) {
-      this.velocity.x = this.stats.runSpeed;
+    if (this.position.y - this.stats.dimension / 2 >= STAGE_Y && this.velocity.x > this.stats.runSpeed) {
+      this.velocity.x = constrain(this.velocity.x, -this.stats.runSpeed, this.stats.runSpeed);
     }
-    if (this.position.y < STAGE_Y && this.velocity.x > this.stats.airSpeed) {
-      this.velocity.x = this.stats.airSpeed;
+    if (this.position.y + this.stats.dimension / 2 < STAGE_Y && this.velocity.x > this.stats.airSpeed) {
+      this.velocity.x = constrain(this.velocity.x, -this.stats.airSpeed, this.stats.airSpeed);
     }
   }
 }
@@ -272,7 +279,7 @@ function setup() {
 
 // Manage players
 function draw() {
-  background(220);
+  background(0);
 
   // Draw stage
   rectMode(CORNER);
@@ -290,7 +297,7 @@ function draw() {
 function keyPressed() {
 
   // Ground jump
-  if (keyCode === 89) {
+  if (keyCode === 89 || keyCode === 85) {
     player.jumpSquatting = true;
   }
 
